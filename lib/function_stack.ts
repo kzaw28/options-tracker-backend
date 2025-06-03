@@ -30,7 +30,6 @@ export class LambdaStack extends cdk.Stack {
         handler: "index.handler",
         role: props.lambdaRole,
         environment: envVariables,
-        reservedConcurrentExecutions: 1,
         timeout: cdk.Duration.seconds(60)
       }
     );

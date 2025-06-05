@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { OptionsTrackerBackendStack } from '../lib/options-tracker-backend-stack';
 import { IamRoleStack } from '../lib/iam_stack';
 import { LambdaStack } from '../lib/function_stack';
+import { CognitoStack } from '../lib/cognito_stack';
 
 const app = new cdk.App();
 // new OptionsTrackerBackendStack(app, 'OptionsTrackerBackendStack', {
@@ -28,3 +29,6 @@ const iamRoleStack = new IamRoleStack(app, 'IamRoleStack');
 const lambdaStack = new LambdaStack(app, 'LambdaStack', {
   lambdaRole: iamRoleStack.lambdaRole
 });
+
+// Create Cognito User Pool Stack
+const cognitoStack = new CognitoStack(app, 'CognitoStack');

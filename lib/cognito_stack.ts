@@ -23,12 +23,22 @@ export class CognitoStack extends cdk.Stack {
                 requireUppercase: true,
                 requireDigits: true,
                 requireSymbols: true,
-                tempPasswordValidity: cdk.Duration.days(7)
             },
             mfa: cognito.Mfa.OPTIONAL,
             mfaMessage: "Your verification code is {####}",
             accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
-            // --- Security Configuration ---
+            // --- Standard Attributes ---
+            standardAttributes: {
+                email: {
+                    required: true,
+                    mutable: true,
+                },
+                givenName: {
+                    required: false,
+                    mutable: true,
+                },
+                
+            }
         
         })
 

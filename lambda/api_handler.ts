@@ -1,8 +1,8 @@
 import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
 const client = new SNSClient({region: 'us-east-2'});
 
-export async function handler (event) {
-    console.log('Lambda function triggered by CloudWatch Events: ');
+export async function handler (event: any) {
+    console.log('API Handler Lambda function triggered by CloudWatch Events: ');
 
     try {    
         return {

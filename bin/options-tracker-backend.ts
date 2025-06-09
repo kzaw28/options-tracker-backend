@@ -4,8 +4,8 @@ import * as cdk from 'aws-cdk-lib';
 
 import { IamRoleStack } from '../lib/iam_stack';
 import { LambdaStack } from '../lib/function_stack';
-// import { AuthStack } from '../lib/auth_stack';
-// import { ApiStack } from '../lib/api_stack';
+import { AuthStack } from '../lib/auth_stack';
+import { ApiStack } from '../lib/api_stack';
 
 // new OptionsTrackerBackendStack(app, 'OptionsTrackerBackendStack', {
 //   /* If you don't specify 'env', this stack will be environment-agnostic.
@@ -32,12 +32,12 @@ const createStacks = async () => {
     const lambdaStack = new LambdaStack(app, 'LambdaStack', {
       lambdaRole: iamRoleStack.lambdaRole
     });
-    // const authStack = new AuthStack(app, 'AuthStack');
-    // new ApiStack(app, 'ApiStack', {
-    //   lambdaIntegration: lambdaStack.lambdaIntegration,
-    //   userPool: authStack.userPool,
-    //   scopeResourceName: authStack.scopeResourceName
-    // });
+    const authStack = new AuthStack(app, 'AuthStack');
+    new ApiStack(app, 'ApiStack', {
+      lambdaIntegration: lambdaStack.lambdaIntegration,
+      userPool: authStack.userPool,
+      scopeResourceName: authStack.scopeResourceName
+    });
   
     app.synth();
     return "Stacks created successfully!";

@@ -32,7 +32,7 @@ export class LambdaStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(60),
     });
 
-    // Create the Lambda integration for API Gateway
+    // Lambda integration for API Gateway
     this.lambdaIntegration = new LambdaIntegration(ApiLambda);
 
 

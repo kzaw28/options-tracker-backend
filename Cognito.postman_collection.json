@@ -1,0 +1,107 @@
+{
+    "info": {
+        "_postman_id": "0d4fba8a-c66a-49ef-8526-91445054a43a",
+        "name": "Cognito Postman Collection",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "110562"
+    },
+    "item": [
+        {
+            "name": "Test Request",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{apiUrl}}/dev/test",
+                    "host": [
+                        "{{apiUrl}}"
+                    ],
+                    "path": [
+                        "dev",
+                        "test"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ],
+    "auth": {
+        "type": "oauth2",
+        "oauth2": [
+            {
+                "key": "clientSecret",
+                "value": "xxxxxxxxxxxxxxxxxxxxxxxxxx",
+                "type": "string"
+            },
+            {
+                "key": "clientId",
+                "value": "xxxxxxxxxxxxxxxxxxxxxxxxxx",
+                "type": "string"
+            },
+            {
+                "key": "refreshTokenUrl",
+                "value": "https://tutorial-user-pool-dev.auth.us-east-1.amazoncognito.com/oauth2/token",
+                "type": "string"
+            },
+            {
+                "key": "client_authentication",
+                "value": "body",
+                "type": "string"
+            },
+            {
+                "key": "accessTokenUrl",
+                "value": "https://tutorial-user-pool-dev.auth.us-east-1.amazoncognito.com/oauth2/token",
+                "type": "string"
+            },
+            {
+                "key": "grant_type",
+                "value": "client_credentials",
+                "type": "string"
+            },
+            {
+                "key": "tokenName",
+                "value": "Request Token",
+                "type": "string"
+            },
+            {
+                "key": "redirect_uri",
+                "value": "https://tutorial-user-pool-sandbox.auth.us-east-1.amazoncognito.com/oauth2/token",
+                "type": "string"
+            },
+            {
+                "key": "addTokenTo",
+                "value": "header",
+                "type": "string"
+            }
+        ]
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "apiUrl",
+            "value": "https://xxxxxxxxx.execute-api.us-east-1.amazonaws.com",
+            "type": "string"
+        }
+    ]
+}

@@ -21,10 +21,24 @@ const app = new cdk.App();
 //   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 // });
 
-// Create IAM Role Stack
-const iamRoleStack = new IamRoleStack(app, 'IamRoleStack');
+const createStacks = async () => {
+  try {
+    const app = new cdk.App();
 
-// Create Lambda Stack and pass the IAM role created in the IAM Role Stack
-const lambdaStack = new LambdaStack(app, 'LambdaStack', {
-  lambdaRole: iamRoleStack.lambdaRole
-});
+    const iamRoleStack = new IamRoleStack(app, 'IamRoleStack');
+    const lambdaStack = new LambdaStack(app, 'LambdaStack', {
+      lambdaRole: iamRoleStack.lambdaRole
+    });
+  
+    app.synth();
+    return "Stacks created successfully!";
+  } catch (error) {
+    return error;
+  }
+}
+
+
+// init 
+createStacks()
+  .then(message => console.log(message))
+  .catch(error => console.error(error))

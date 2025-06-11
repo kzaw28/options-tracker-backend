@@ -87,28 +87,47 @@ export class AuthStack extends Stack {
          * Important: Matches up with MethodOptions.authorizationScopes in API Gateway stack
          */
 
-        // App Client for the User Pool ------------------------------
-        this.userPool.addClient("UserPoolClient", {
-            generateSecret: true, // Used for confidential clients (backend services) 
+        // // App Client for the User Pool ------------------------------
+        // this.userPool.addClient("UserPoolClient", {
+        //     generateSecret: true, // Used for confidential clients (backend services) 
+        //     enableTokenRevocation: true,  
+        //     accessTokenValidity: Duration.hours(1),
+        //     idTokenValidity: Duration.hours(1),
+        //     // oAuth: {
+        //     //     flows: {
+        //     //         clientCredentials: true, // Enable client credentials flow
+        //     //     },
+        //     //     scopes: [
+        //     //         OAuthScope.resourceServer(resourceServer, apiServerScope), // Add the custom scope
+        //     //     ],
+        //     // },
+        //     // Enable the following auth flows
+        //     // This allows the user to authenticate using username and password, SRP, or custom auth
+        //     authFlows: {
+        //         adminUserPassword: true,
+        //         userPassword: true,
+        //         userSrp: true,
+        //         custom: true,
+        //     }
+        // })
+        // App Client for User Authentication ------------------------------
+        
+        const userPoolClient = this.userPool.addClient("UserPoolClient", {
+            generateSecret: false, // No secret needed for user auth flows
             enableTokenRevocation: true,  
             accessTokenValidity: Duration.hours(1),
             idTokenValidity: Duration.hours(1),
-            oAuth: {
-                flows: {
-                    clientCredentials: true, // Enable client credentials flow
-                },
-                scopes: [
-                    OAuthScope.resourceServer(resourceServer, apiServerScope), // Add the custom scope
-                ],
-            },
-            // Enable the following auth flows
-            // This allows the user to authenticate using username and password, SRP, or custom auth
             authFlows: {
-                adminUserPassword: true,
-                userPassword: true,
-                userSrp: true,
+                adminUserPassword: true, // Allows admin to authenticate users
+                userPassword: true,      // Direct username/password login
+                userSrp: true,          // Secure Remote Password protocol
                 custom: true,
             }
-        })
-    } 
+        });
+
+        new CfnOutput(this, 'UserPoolClientId', {
+            value: userPoolClient.userPoolClientId,
+            description: 'User Pool Client ID for authentication',
+        });
+    }
 }

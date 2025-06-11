@@ -46,10 +46,10 @@ export class ApiStack extends Stack {
             authorizer: {
                 authorizerId: authorizer.authorizerId,
             },
-            authorizationScopes: [
-                //IMPORTANT! Must match server scopes in AuthStack!
-                `${globals.environment}/${props.scopeResourceName}`
-            ]
+            // authorizationScopes: [
+            //     //IMPORTANT! Must match server scopes in AuthStack!
+            //     `${globals.environment}/${props.scopeResourceName}`
+            // ]
         }
 
         // CORS Options
@@ -63,12 +63,22 @@ export class ApiStack extends Stack {
 
         // API ENDPOINTS --------------------------------
         // Create a root resource
-        const resource = api.root.addResource(props.scopeResourceName, optionsWithCors); // e.g. /options
-        resource.addMethod("GET", props.lambdaIntegration, optionsWithAuth); // GET
-        // resource.addMethod("POST", props.lambdaIntegration, optionsWithAuth); // POST
+        const root = api.root.addResource(props.scopeResourceName, optionsWithCors); // e.g. /api
+
+        root.addMethod("GET", props.lambdaIntegration, optionsWithAuth); // GET
+        // Add OPTIONS method for CORS preflight
+        root.addMethod("OPTIONS", props.lambdaIntegration, {
+            authorizationType: AuthorizationType.NONE, // OPTIONS should not require auth
+        });
+
         new CfnOutput(this, "ApiEndpoint", {
             value: api.url,
             description: "The endpoint of the API Gateway",
+        });
+
+        new CfnOutput(this, "ApiFullUrl", {
+            value: `${api.url}${props.scopeResourceName}`,
+            description: "Full API endpoint URL",
         });
     }
 }

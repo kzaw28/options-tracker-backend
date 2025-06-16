@@ -24,7 +24,8 @@ export class ApiStack extends Stack {
         super(scope, id, props);
 
         const api = new RestApi(this, "OptionsTrackerRestApi", {
-            binaryMediaTypes: ["*/*"],
+            restApiName: "Options-Tracker-API",
+            description: "API for Options Tracker application",
             deployOptions: {
                 stageName: globals.environment,
                 throttlingBurstLimit: 20,
@@ -33,7 +34,7 @@ export class ApiStack extends Stack {
 
         })
 
-        // Cognito Authorizer  -------------------------------
+        // Cognito Authorizer for protected routes -------------------------------
         const authorizer = new CognitoUserPoolsAuthorizer(this, "CognitoRestApiAuthorizer", {
             cognitoUserPools: [props.userPool],
             identitySource: "method.request.header.Authorization",
@@ -41,6 +42,7 @@ export class ApiStack extends Stack {
         authorizer._attachToApi(api); // Attach the authorizer to the API
 
         // Cognito Options --------------------------------
+        // Method options for PROTECTED routes
         const optionsWithAuth: MethodOptions = {
             authorizationType: AuthorizationType.COGNITO,
             authorizer: {
@@ -52,32 +54,60 @@ export class ApiStack extends Stack {
             // ]
         }
 
-        // CORS Options
+        // Method options for UNPROTECTED routes
+        const optionsWithNoAuth: MethodOptions = {
+            authorizationType: AuthorizationType.NONE,
+        }
+
+        // CORS Options for all resources
         const optionsWithCors: ResourceOptions = {
             defaultCorsPreflightOptions: {
                 allowOrigins: Cors.ALL_ORIGINS,
                 allowMethods: Cors.ALL_METHODS,
-                allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token"],
+                allowHeaders: Cors.DEFAULT_HEADERS.concat(["Authorization", "Content-Type"]),
             },
         }
 
         // API ENDPOINTS --------------------------------
-        // Create a root resource
-        const root = api.root.addResource(props.scopeResourceName, optionsWithCors); // e.g. /api
 
-        root.addMethod("GET", props.lambdaIntegration, optionsWithAuth); // GET
-        // Add OPTIONS method for CORS preflight
-        root.addMethod("OPTIONS", props.lambdaIntegration, {
-            authorizationType: AuthorizationType.NONE, // OPTIONS should not require auth
-        });
+        // Create a root resource (/api)
+        const apiResource = api.root.addResource("api", optionsWithCors);
 
+    
+        // Public Endpoints --------------------------------
+        const authResource = apiResource.addResource("auth")
+
+        const registerResource = authResource.addResource("register")
+        registerResource.addMethod("POST", props.lambdaIntegration, optionsWithNoAuth); // POST /api/auth/register
+
+        const loginResource = authResource.addResource("login");
+        loginResource.addMethod("POST", props.lambdaIntegration, optionsWithNoAuth); // POST /api/auth/login
+
+        // Protected Endpoints --------------------------------
+        const optionsResource = apiResource.addResource("options");
+        optionsResource.addProxy({
+            defaultIntegration: props.lambdaIntegration,
+            defaultMethodOptions: optionsWithAuth, // Use the authorizer for all methods
+        })
+
+
+        // const root = api.root.addResource(props.scopeResourceName, optionsWithCors); 
+
+        // root.addMethod("GET", props.lambdaIntegration, optionsWithAuth); // GET
+        // // Add OPTIONS method for CORS preflight
+        // root.addMethod("OPTIONS", props.lambdaIntegration, {
+        //     authorizationType: AuthorizationType.NONE, // OPTIONS should not require auth
+        // });
+
+
+        // Outputs --------------------------------
         new CfnOutput(this, "ApiEndpoint", {
             value: api.url,
             description: "The endpoint of the API Gateway",
         });
 
         new CfnOutput(this, "ApiFullUrl", {
-            value: `${api.url}${props.scopeResourceName}`,
+            value: `${api.url}api`,
             description: "Full API endpoint URL",
         });
     }

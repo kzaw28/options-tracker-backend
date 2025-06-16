@@ -2,7 +2,7 @@
 // This class defines the Cognito stack.
 
 import { CfnOutput, Stack, StackProps, Duration } from 'aws-cdk-lib';
-import { ResourceServerScope, UserPool, UserPoolResourceServer, CfnUserPoolGroup, OAuthScope } from 'aws-cdk-lib/aws-cognito';
+import { ResourceServerScope, UserPool, UserPoolResourceServer, CfnUserPoolGroup, OAuthScope, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
 import { globals } from './globals';
 
@@ -10,6 +10,8 @@ export class AuthStack extends Stack {
     // Public properties 
     public userPool: UserPool;
     public scopeResourceName: string;
+    public userPoolClient: UserPoolClient;
+
     // Constructor
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
@@ -110,6 +112,7 @@ export class AuthStack extends Stack {
         //         custom: true,
         //     }
         // })
+        
         // App Client for User Authentication ------------------------------
         
         const userPoolClient = this.userPool.addClient("UserPoolClient", {
@@ -124,6 +127,7 @@ export class AuthStack extends Stack {
                 custom: true,
             }
         });
+        this.userPoolClient = userPoolClient;
 
         new CfnOutput(this, 'UserPoolClientId', {
             value: userPoolClient.userPoolClientId,

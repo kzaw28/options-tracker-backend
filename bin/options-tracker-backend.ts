@@ -29,10 +29,12 @@ const createStacks = async () => {
     const app = new cdk.App();
 
     const iamRoleStack = new IamRoleStack(app, 'IamRoleStack');
-    const lambdaStack = new LambdaStack(app, 'LambdaStack', {
-      lambdaRole: iamRoleStack.lambdaRole
-    });
     const authStack = new AuthStack(app, 'AuthStack');
+
+    const lambdaStack = new LambdaStack(app, 'LambdaStack', {
+      lambdaRole: iamRoleStack.lambdaRole,
+      userPoolClientId: authStack.userPoolClient.userPoolClientId
+    });
     new ApiStack(app, 'ApiStack', {
       lambdaIntegration: lambdaStack.lambdaIntegration,
       userPool: authStack.userPool,

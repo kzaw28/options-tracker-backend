@@ -3,9 +3,12 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
 import * as iam from "aws-cdk-lib/aws-iam";
 import { globals } from "./globals";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 
 interface LambdaStackProps extends cdk.StackProps {
   lambdaRole: iam.IRole;
+  userTable: dynamodb.Table;
+  optionTable: dynamodb.Table;
 }
 
 export class LambdaStack extends cdk.Stack {
@@ -16,7 +19,7 @@ export class LambdaStack extends cdk.Stack {
     super(scope, id, props);
 
     let envVariables = {
-      SNS_TOPIC_ARN: globals.snsTopicArn
+      SNS_TOPIC_ARN: globals.snsTopicArn,
     };
 
     // Define the Lambda function
@@ -30,7 +33,7 @@ export class LambdaStack extends cdk.Stack {
         handler: "index.handler",
         role: props.lambdaRole,
         environment: envVariables,
-        timeout: cdk.Duration.seconds(60)
+        timeout: cdk.Duration.seconds(60),
       }
     );
   }

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-import * as cdk from 'aws-cdk-lib';
-import { OptionsTrackerBackendStack } from '../lib/options-tracker-backend-stack';
-import { IamRoleStack } from '../lib/iam_stack';
-import { LambdaStack } from '../lib/function_stack';
+import * as cdk from "aws-cdk-lib";
+import { OptionsTrackerBackendStack } from "../lib/options-tracker-backend-stack";
+import { IamRoleStack } from "../lib/iam_stack";
+import { LambdaStack } from "../lib/function_stack";
+import { DynamoDBStack } from "../lib/dynamodb_stack";
 
 const app = new cdk.App();
 // new OptionsTrackerBackendStack(app, 'OptionsTrackerBackendStack', {
@@ -23,22 +24,24 @@ const app = new cdk.App();
 
 const createStacks = async () => {
   try {
-    const app = new cdk.App();
+    // const app = new cdk.App();
 
-    const iamRoleStack = new IamRoleStack(app, 'IamRoleStack');
-    const lambdaStack = new LambdaStack(app, 'LambdaStack', {
-      lambdaRole: iamRoleStack.lambdaRole
+    const iamRoleStack = new IamRoleStack(app, "IamRoleStack");
+    const dynamoDBStack = new DynamoDBStack(app, "DynamoDBStack");
+    const lambdaStack = new LambdaStack(app, "LambdaStack", {
+      lambdaRole: iamRoleStack.lambdaRole,
+      userTable: dynamoDBStack.user,
+      optionTable: dynamoDBStack.option,
     });
-  
+
     app.synth();
     return "Stacks created successfully!";
   } catch (error) {
     return error;
   }
-}
+};
 
-
-// init 
+// init
 createStacks()
-  .then(message => console.log(message))
-  .catch(error => console.error(error))
+  .then((message) => console.log(message))
+  .catch((error) => console.error(error));

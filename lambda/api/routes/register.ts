@@ -1,32 +1,58 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { CognitoIdentityServiceProvider } from "aws-sdk";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { registerUser } from '../utils/cognitoClient';
+
+const JSON_HEADERS = {
+    'Content-Type': 'application/json',
+ };
+
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
-        const { username, password, email } = JSON.parse(event.body || "{}");
-        const cognito = new CognitoIdentityServiceProvider();
+        const { username, password, email } = JSON.parse(event.body || '{}');
 
-        await cognito.signUp(
-            {
-                ClientId: process.env.USER_POOL_CLIENT_ID!,
-                Username: username,
-                Password: password,
-                UserAttributes: [{ Name: "email", Value: email }],
-            }
-        ).promise();
+        // Input validation
+        if (!username || !password || !email) {
+        return {
+            statusCode: 400,
+            headers: JSON_HEADERS,
+            body: JSON.stringify({ message: 'Missing username, password, or email' }),
+        };
+        }
+
+        const clientId = process.env.USER_POOL_CLIENT_ID;
+        if (!clientId) {
+            // console.error('USER_POOL_CLIENT_ID is not set');
+            return {
+                statusCode: 500,
+                headers: JSON_HEADERS,
+                body: JSON.stringify({ message: 'Server configuration error: USER_POOL_CLIENT_ID is not set' }),
+            };
+        }
+
+
+        await registerUser({ username, password, email, clientId });
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ message: "User created" }),
+            headers: JSON_HEADERS,
+            body: JSON.stringify({ message: 'User created' }),
         };
     } catch (error: any) {
-        console.error("Register Error:", error);
+        // console.error('Register Error:', error);
+        if (error.name === 'UsernameExistsException') {
+            return {
+                statusCode: 400,
+                headers: JSON_HEADERS,
+                body: JSON.stringify({ message: 'User already exists' }),
+            };
+        }
         return {
-            statusCode: 400,
+            statusCode: 500,
+            headers: JSON_HEADERS,
             body: JSON.stringify({
-                message: "Registration failed",
-                error: error.message || "An unexpected error occurred"
-            })
+                message: 'Registration failed',
+                error: error.message || 'An unexpected error occurred',
+            }),
         };
     }
 };

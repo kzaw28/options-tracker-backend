@@ -1,40 +1,61 @@
-import {
-    APIGatewayProxyEvent,
-    APIGatewayProxyResult, 
-} from "aws-lambda";
-import { CognitoIdentityServiceProvider } from "aws-sdk";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { loginUser } from '../utils/cognitoClient';
 
-export const handler = async (
-    event: APIGatewayProxyEvent,
-): Promise<APIGatewayProxyResult> => {
+const JSON_HEADERS = {
+  'Content-Type': 'application/json',
+};
+
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
-        const { username, password } = JSON.parse(event.body || "{}");
-        console.log("Yello USER_POOL_CLIENT_ID =", process.env.USER_POOL_CLIENT_ID);
-        const cognito = new CognitoIdentityServiceProvider();
-        
-        const auth = await cognito.initiateAuth(
-            {
-                AuthFlow: "USER_PASSWORD_AUTH",
-                ClientId: process.env.USER_POOL_CLIENT_ID || "", // Ensure this is set in your environment variables
-                AuthParameters: {
-                    USERNAME: username,
-                    PASSWORD: password,
-                },
-            }
-        ).promise();
+        const { username, password } = JSON.parse(event.body || '{}');
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ tokens: auth.AuthenticationResult }),
-        };
-    } catch (error: any) {
-        console.error("Login error:", error);
+        // Input validation
+        if (!username || !password) {
         return {
             statusCode: 400,
-            body: JSON.stringify({
-                message: "Login failed",
-                error: error.message || "An unexpected error occurred"
-            })
+            headers: JSON_HEADERS,
+            body: JSON.stringify({ message: 'Missing username or password' }),
+        };
+        }
+
+        // Ensyre clientId is set
+        const clientId = process.env.USER_POOL_CLIENT_ID!;
+        if (!clientId) {
+            // console.error('USER_POOL_CLIENT_ID is not set');
+            return {
+                statusCode: 500,
+                headers: JSON_HEADERS,
+                body: JSON.stringify({ message: 'Server configuration error: USER_POOL_CLIENT_ID is not set' }),
+            };
+        }
+
+        // Attempt to log in the user
+        const authResult = await loginUser({ username, password, clientId });
+        if (!authResult) {
+            return {
+                statusCode: 401,
+                headers: JSON_HEADERS,
+                body: JSON.stringify({ message: 'Invalid username or password' }),
+            };
+        }
+        
+
+        // Successful login
+        return {
+            statusCode: 200,
+            headers: JSON_HEADERS,
+            body: JSON.stringify({ tokens: authResult }),
+        };
+        
+    } catch (error: any) {
+        // console.error('Login Error:', error);
+        return {
+        statusCode: 500,
+        headers: JSON_HEADERS,
+        body: JSON.stringify({
+            message: 'Login failed',
+            error: error.message || 'An unexpected error occurred',
+        }),
         };
     }
-}
+};

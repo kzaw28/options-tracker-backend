@@ -25,25 +25,25 @@ This guide helps developers set up and run the backend locally.
 
 ### 1. Clone the Repo
 
-\`\`\`bash
+```bash
 git clone https://github.com/kzaw28/options-tracker-backend.git
 cd options-tracker-backend
-\`\`\`
+```
 
 ### 2. Install Dependencies
 
-\`\`\`bash
+```bash
 npm install
-\`\`\`
+```
 
 ### 3. Set Up Environment Variables
 
 Create a `.env` file in the root folder and add:
 
-\`\`\`
+```
 AWS_ACCOUNT_ID=your--id
 AWS_REGION=us-east-2
-\`\`\`
+```
 
 (Refer to `.env.example` for the full list.)
 
@@ -53,12 +53,12 @@ AWS_REGION=us-east-2
 
 | Variable             | Description                              |
 |----------------------|------------------------------------------|
-| \`AWS_ACCOUNT_ID\`| Your AWS Account ID          |
-| \`AWS_REGION\`         | AWS region (e.g. \`us-east-1\`)            |
+| `AWS_ACCOUNT_ID`| Your AWS Account ID          |
+| `AWS_REGION`         | AWS region (e.g. `us-east-1`)            |
 
 Optional (for future use):
 
-| \`SNS_TOPIC_NAME\`, \`NODE_ENV\` |
+| `SNS_TOPIC_NAME`, `NODE_ENV` |
 
 ---
 
@@ -66,27 +66,27 @@ Optional (for future use):
 
 ### Register User
 
-\`POST /api/auth/register\`
+`POST /api/auth/register`
 
 Registers a new user in Cognito.
 
 #### Request
 
-\`\`\`json
+```json
 {
   "username": "user@example.com",
   "password": "securepassword",
   "email": "user@example.com"
 }
-\`\`\`
+```
 
 #### Success Response
 
-\`\`\`json
+```json
 {
   "message": "User created"
 }
-\`\`\`
+```
 
 #### Error Responses
 
@@ -97,22 +97,22 @@ Registers a new user in Cognito.
 
 ### Login User
 
-\`POST /api/auth/login\`
+`POST /api/auth/login`
 
 Authenticates a user via Cognito and returns tokens.
 
 #### Request
 
-\`\`\`json
+```json
 {
   "username": "user@example.com",
   "password": "securepassword"
 }
-\`\`\`
+```
 
 #### Success Response
 
-\`\`\`json
+```json
 {
   "tokens": {
     "AccessToken": "...",
@@ -120,7 +120,7 @@ Authenticates a user via Cognito and returns tokens.
     "RefreshToken": "..."
   }
 }
-\`\`\`
+```
 
 #### Error Responses
 
@@ -136,13 +136,13 @@ We use [Jest](https://jestjs.io/) for unit testing.
 
 To run tests:
 
-\`\`\`bash
+```bash
 npm test
-\`\`\`
+```
 
 Example test files:  
-- \`routes/__tests__/login.test.ts\`  
-- \`routes/__tests__/register.test.ts\`
+- `routes/__tests__/login.test.ts`  
+- `routes/__tests__/register.test.ts`
 
 ---
 
@@ -152,10 +152,10 @@ We use AWS CDK to deploy the backend.
 
 ### Deploy with CDK
 
-\`\`\`bash
+```bash
 npm run build
 cdk deploy --all
-\`\`\`
+```
 
 Ensure you have your AWS CLI configured through [bootstrapping](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html).
 
@@ -163,9 +163,9 @@ Ensure you have your AWS CLI configured through [bootstrapping](https://docs.aws
 
 ## Troubleshooting
 
-- Make sure \`.env\` has correct values.
+- Make sure `.env` has correct values.
 - Double-check your AWS credentials.
-- Use \`sam logs\` or CloudWatch for debugging Lambda errors.
+- Use `sam logs` or CloudWatch for debugging Lambda errors.
 - If using SAM CLI, Docker must be running.
 
 ---

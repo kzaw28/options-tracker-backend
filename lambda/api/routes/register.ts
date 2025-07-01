@@ -1,3 +1,31 @@
+/**
+ * Register Handler
+ * 
+ * Endpoint: POST /api/register
+ * 
+ * Description:
+ * Registers a new user using AWS Cognito. Validates the user's username, password, and email,
+ * sends the registration data to Cognito, and returns a success message if registration is successful.
+ * 
+ * Request Body:
+ * {
+ *   "username": "user@example.com",
+ *   "password": "securepassword",
+ *   "email": "user@example.com"
+ * }
+ * 
+ * Response:
+ * 200 OK
+ * {
+ *   "message": "User created"
+ * }
+ * 
+ * Errors:
+ * 400 Bad Request - Missing fields or user already exists
+ * 500 Internal Server Error - Server configuration or unexpected error
+ */
+
+
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { registerUser } from '../utils/cognitoClient';
 

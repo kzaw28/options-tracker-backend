@@ -1,3 +1,31 @@
+/**
+ * Login Handler
+ * 
+ * Endpoint: POST /api/login
+ * 
+ * Description:
+ * Authenticates a user using AWS Cognito. Validates the user's username and password,
+ * sends the credentials to Cognito, and returns tokens (if valid).
+ * 
+ * Request Body:
+ * {
+ *   "username": "user@example.com",
+ *   "password": "securepassword"
+ * }
+ * 
+ * Response:
+ * 200 OK
+ * {
+ *   "tokens": { ...Cognito tokens... }
+ * }
+ * 
+ * Errors:
+ * 400 Bad Request - Missing fields
+ * 401 Unauthorized - Invalid credentials
+ * 500 Internal Server Error - Server configuration or unexpected error
+ */
+ 
+
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { loginUser } from '../utils/cognitoClient';
 

@@ -1,3 +1,14 @@
+/**
+ * Cognito client utility functions for user authentication and registration.
+ * 
+ * This module provides helper functions to interact with AWS Cognito for:
+ *  - Registering new users (`registerUser`)
+ *  - Authenticating users and retrieving tokens (`loginUser`)
+ * 
+ * These functions are used by the `login.ts` and `register.ts` Lambda route handlers.
+ */
+
+
 import {
   CognitoIdentityProviderClient,
   SignUpCommand,

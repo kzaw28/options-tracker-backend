@@ -1,8 +1,11 @@
-const accountID = '537622164409';
-const accountRegion = 'us-east-2';
-const snsTopicName = 'Broker-Topic';
+import * as dotenv from 'dotenv';
+dotenv.config(); // Load variables from .env
+
+const accountID = process.env.AWS_ACCOUNT_ID || '';
+const accountRegion = process.env.AWS_REGION || 'us-east-1';
+const snsTopicName = process.env.SNS_TOPIC_NAME || 'Broker-Topic';
 const snsTopicArn = `arn:aws:sns:${accountRegion}:${accountID}:${snsTopicName}`;
-const environment = "dev";
+const environment = process.env.NODE_ENV || 'dev';
 
 
 export const globals = {

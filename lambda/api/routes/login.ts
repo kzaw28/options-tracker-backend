@@ -1,7 +1,7 @@
 /**
  * Login Handler
  * 
- * Endpoint: POST /api/login
+ * Endpoint: POST /api/auth/login
  * 
  * Description:
  * Authenticates a user using AWS Cognito. Validates the user's username and password,

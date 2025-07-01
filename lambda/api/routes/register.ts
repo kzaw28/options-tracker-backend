@@ -1,7 +1,7 @@
 /**
  * Register Handler
  * 
- * Endpoint: POST /api/register
+ * Endpoint: POST /api/auth/register
  * 
  * Description:
  * Registers a new user using AWS Cognito. Validates the user's username, password, and email,

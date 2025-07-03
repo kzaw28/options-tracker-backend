@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 import * as cdk from "aws-cdk-lib";
-import { OptionsTrackerBackendStack } from "../lib/options-tracker-backend-stack";
+// import { OptionsTrackerBackendStack } from "../lib/options-tracker-backend-stack";
+
 import { IamRoleStack } from "../lib/iam_stack";
 import { LambdaStack } from "../lib/function_stack";
 import { DynamoDBStack } from "../lib/dynamodb_stack";
+import { AuthStack } from '../lib/auth_stack';
+import { ApiStack } from '../lib/api_stack';
 
-const app = new cdk.App();
 // new OptionsTrackerBackendStack(app, 'OptionsTrackerBackendStack', {
 //   /* If you don't specify 'env', this stack will be environment-agnostic.
 //    * Account/Region-dependent features and context lookups will not work,
@@ -22,16 +24,25 @@ const app = new cdk.App();
 //   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 // });
 
+
 const createStacks = async () => {
   try {
-    // const app = new cdk.App();
+    const app = new cdk.App();
 
     const iamRoleStack = new IamRoleStack(app, "IamRoleStack");
     const dynamoDBStack = new DynamoDBStack(app, "DynamoDBStack");
+    const authStack = new AuthStack(app, 'AuthStack');
+
     const lambdaStack = new LambdaStack(app, "LambdaStack", {
       lambdaRole: iamRoleStack.lambdaRole,
       userTable: dynamoDBStack.user,
-      optionTable: dynamoDBStack.option,
+      optionTable: dynamoDBStack.option,,
+      userPoolClientId: authStack.userPoolClient.userPoolClientId
+    });
+    new ApiStack(app, 'ApiStack', {
+      lambdaIntegration: lambdaStack.lambdaIntegration,
+      userPool: authStack.userPool,
+      scopeResourceName: authStack.scopeResourceName
     });
 
     app.synth();

@@ -2,14 +2,14 @@ import * as cdk from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as iam from "aws-cdk-lib/aws-iam";
 
-
 import { LambdaIntegration } from "aws-cdk-lib/aws-apigateway";
 import { Construct } from "constructs";
 import { globals } from "./globals";
 
 interface LambdaStackProps extends cdk.StackProps {
   lambdaRole: iam.IRole;
-  userPoolClientId: string; // Optional, if you need to pass the User Pool Client ID
+  userPoolClientId: string;
+  userPoolId: string;
 }
 
 export class LambdaStack extends cdk.Stack {
@@ -21,6 +21,7 @@ export class LambdaStack extends cdk.Stack {
     let envVariables = {
       SNS_TOPIC_ARN: globals.snsTopicArn,
       USER_POOL_CLIENT_ID: props.userPoolClientId,
+      USER_POOL_ID: props.userPoolId,
     };
 
     // API Gateway Lambda
@@ -36,23 +37,5 @@ export class LambdaStack extends cdk.Stack {
 
     // Lambda integration for API Gateway
     this.lambdaIntegration = new LambdaIntegration(ApiLambda);
-
-
-    // ----------------------------------------------------------------
-    // // Define the Lambda function
-    // const brokerLambdaFunction = new lambda.Function(
-    //   this,
-    //   "brokerLambdaFunction",
-    //   {
-    //     functionName: "brokerLambdaFunction",
-    //     runtime: lambda.Runtime.NODEJS_18_X,
-    //     code: lambda.Code.fromAsset("lambda"), // Assuming your Lambda code is in the 'lambda' directory
-    //     handler: "index.handler",
-    //     role: props.lambdaRole,
-    //     environment: envVariables,
-    //     timeout: cdk.Duration.seconds(60)
-    //   }
-    // );
-    
   }
 }

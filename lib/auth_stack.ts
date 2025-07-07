@@ -128,6 +128,7 @@ export class AuthStack extends Stack {
             }
         });
         this.userPoolClient = userPoolClient;
+        
 
         new CfnOutput(this, 'UserPoolClientId', {
             value: userPoolClient.userPoolClientId,

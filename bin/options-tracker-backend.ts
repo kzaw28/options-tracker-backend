@@ -33,7 +33,8 @@ const createStacks = async () => {
 
     const lambdaStack = new LambdaStack(app, 'LambdaStack', {
       lambdaRole: iamRoleStack.lambdaRole,
-      userPoolClientId: authStack.userPoolClient.userPoolClientId
+      userPoolId: authStack.userPool.userPoolId,
+      userPoolClientId: authStack.userPoolClient.userPoolClientId, 
     });
     new ApiStack(app, 'ApiStack', {
       lambdaIntegration: lambdaStack.lambdaIntegration,

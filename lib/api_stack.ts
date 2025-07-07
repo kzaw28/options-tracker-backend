@@ -90,6 +90,8 @@ export class ApiStack extends Stack {
             defaultMethodOptions: optionsWithAuth, // Use the authorizer for all methods
         })
 
+        optionsResource.addMethod("POST", props.lambdaIntegration, optionsWithAuth); // POST /api/options
+
 
         // const root = api.root.addResource(props.scopeResourceName, optionsWithCors); 
 

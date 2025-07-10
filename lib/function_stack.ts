@@ -23,6 +23,8 @@ export class LambdaStack extends cdk.Stack {
     let envVariables = {
       SNS_TOPIC_ARN: globals.snsTopicArn,
       USER_POOL_CLIENT_ID: props.userPoolClientId,
+      USER_TABLE_NAME: props.userTable.tableName,
+      OPTION_TABLE_NAME: props.optionTable.tableName,
     };
 
     // API Gateway Lambda
@@ -35,6 +37,10 @@ export class LambdaStack extends cdk.Stack {
       role: props.lambdaRole,
       timeout: cdk.Duration.seconds(60),
     });
+
+    // Grant Lambda permission to read/write from DynamoDB tables
+    props.userTable.grantReadWriteData(ApiLambda);
+    props.optionTable.grantReadWriteData(ApiLambda);
 
     // Lambda integration for API Gateway
     this.lambdaIntegration = new LambdaIntegration(ApiLambda);

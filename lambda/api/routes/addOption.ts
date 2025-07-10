@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { putOption } from "../utils/dynamoClient";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
-import { CognitoAccessTokenPayload } from "aws-jwt-verify/jwt-model";
+import { CognitoIdTokenPayload } from "aws-jwt-verify/jwt-model";
 
 const JSON_HEADERS = {
   'Content-Type': 'application/json',
@@ -17,7 +17,7 @@ const CLIENT_ID  = process.env.USER_POOL_CLIENT_ID!;
 
 const verifier = CognitoJwtVerifier.create({
   userPoolId: USER_POOL_ID,
-  tokenUse: "access",
+  tokenUse: "id",
   clientId: CLIENT_ID,
 });
 
@@ -36,7 +36,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     
     const tokenValue = token.replace("Bearer ", "");
     // Verify the JWT token
-    const payload: CognitoAccessTokenPayload = await verifier.verify(tokenValue);
+    const payload: CognitoIdTokenPayload = await verifier.verify(tokenValue);
     const email = String(payload.email); // Cast to string?
 
     if (!email) {
@@ -62,6 +62,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }
 
   } catch (error: any) {
+    console.error("Error adding option:", error);
     return {
       statusCode: 500,
       headers: JSON_HEADERS,

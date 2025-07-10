@@ -6,10 +6,12 @@
   },
   "scripts": {
     "build": "tsc",
+    "build:clean": "npm run clean && npm run build",
     "clean": "tsc --build --clean",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "deploy": "tsc && cdk deploy --all"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.149",

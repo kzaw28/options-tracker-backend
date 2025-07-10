@@ -11,13 +11,13 @@ import {
 import { IUserPool } from "aws-cdk-lib/aws-cognito";
 import { Construct } from "constructs";
 import { globals } from "./globals";
+import { Table } from "aws-cdk-lib/aws-dynamodb";
 
 interface ApiStackProps extends StackProps {
     lambdaIntegration: LambdaIntegration;
     userPool: IUserPool;
     scopeResourceName: string;
 }
-
 
 export class ApiStack extends Stack {
     constructor(scope: Construct, id: string, props: ApiStackProps) {
@@ -85,10 +85,10 @@ export class ApiStack extends Stack {
 
         // Protected Endpoints --------------------------------
         const optionsResource = apiResource.addResource("options");
-        optionsResource.addProxy({
-            defaultIntegration: props.lambdaIntegration,
-            defaultMethodOptions: optionsWithAuth, // Use the authorizer for all methods
-        })
+        // optionsResource.addProxy({
+        //     defaultIntegration: props.lambdaIntegration,
+        //     defaultMethodOptions: optionsWithAuth, // Use the authorizer for all methods
+        // })
 
         optionsResource.addMethod("POST", props.lambdaIntegration, optionsWithAuth); // POST /api/options
 

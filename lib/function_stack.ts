@@ -6,6 +6,7 @@ import { LambdaIntegration } from "aws-cdk-lib/aws-apigateway";
 import { Construct } from "constructs";
 import { globals } from "./globals";
 import { env } from "process";
+import { Table } from "aws-cdk-lib/aws-dynamodb";
 
 interface LambdaStackProps extends cdk.StackProps {
   lambdaRole: iam.IRole;
@@ -37,6 +38,18 @@ export class LambdaStack extends cdk.Stack {
       role: props.lambdaRole,
       timeout: cdk.Duration.seconds(60),
     });
+
+        // Grant permissions to the Lambda function
+    // MIGHT NEED TO CHANGE AFTER DYNAMO STACK **************
+    const optionsTable = Table.fromTableName(
+        this,
+        "OptionTable", // ID for the scope
+        "Option" // This should be the name of the DynamoDB table created in the DynamoDB stack
+    )
+
+    optionsTable.grantWriteData(ApiLambda);
+
+    // ********************************************************
 
     // Lambda integration for API Gateway
     this.lambdaIntegration = new LambdaIntegration(ApiLambda);

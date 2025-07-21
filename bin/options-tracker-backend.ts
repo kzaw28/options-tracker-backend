@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-import * as cdk from 'aws-cdk-lib';
-// import { OptionsTrackerBackendStack } from '../lib/options-tracker-backend-stack';
+import * as cdk from "aws-cdk-lib";
+// import { OptionsTrackerBackendStack } from "../lib/options-tracker-backend-stack";
 
-import { IamRoleStack } from '../lib/iam_stack';
-import { LambdaStack } from '../lib/function_stack';
-import { AuthStack } from '../lib/auth_stack';
-import { ApiStack } from '../lib/api_stack';
+import { IamRoleStack } from "../lib/iam_stack";
+import { LambdaStack } from "../lib/function_stack";
+import { DynamoDBStack } from "../lib/dynamodb_stack";
+import { AuthStack } from "../lib/auth_stack";
+import { ApiStack } from "../lib/api_stack";
 
 // new OptionsTrackerBackendStack(app, 'OptionsTrackerBackendStack', {
 //   /* If you don't specify 'env', this stack will be environment-agnostic.
@@ -23,34 +24,35 @@ import { ApiStack } from '../lib/api_stack';
 //   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 // });
 
-
 const createStacks = async () => {
   try {
     const app = new cdk.App();
 
-    const iamRoleStack = new IamRoleStack(app, 'IamRoleStack');
-    const authStack = new AuthStack(app, 'AuthStack');
+    const iamRoleStack = new IamRoleStack(app, "IamRoleStack");
+    const dynamoDBStack = new DynamoDBStack(app, "DynamoDBStack");
+    const authStack = new AuthStack(app, "AuthStack");
 
-    const lambdaStack = new LambdaStack(app, 'LambdaStack', {
+    const lambdaStack = new LambdaStack(app, "LambdaStack", {
       lambdaRole: iamRoleStack.lambdaRole,
       userPoolId: authStack.userPool.userPoolId,
-      userPoolClientId: authStack.userPoolClient.userPoolClientId, 
+      userTable: dynamoDBStack.user,
+      optionTable: dynamoDBStack.option,
+      userPoolClientId: authStack.userPoolClient.userPoolClientId,
     });
-    new ApiStack(app, 'ApiStack', {
+    new ApiStack(app, "ApiStack", {
       lambdaIntegration: lambdaStack.lambdaIntegration,
       userPool: authStack.userPool,
-      scopeResourceName: authStack.scopeResourceName
+      scopeResourceName: authStack.scopeResourceName,
     });
-  
+
     app.synth();
     return "Stacks created successfully!";
   } catch (error) {
     return error;
   }
-}
+};
 
-
-// init 
+// init
 createStacks()
-  .then(message => console.log(message))
-  .catch(error => console.error(error))
+  .then((message) => console.log(message))
+  .catch((error) => console.error(error));

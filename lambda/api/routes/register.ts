@@ -27,9 +27,8 @@
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { registerUser } from "../utils/cognitoClient";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { User } from "../types/user";
+import { createUser } from "../utils/userDbClient";
 
 const JSON_HEADERS = {
   "Content-Type": "application/json",
@@ -39,12 +38,7 @@ export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
-    const client = new DynamoDBClient({ region: "us-east-2" });
-    const dynamo = DynamoDBDocumentClient.from(client);
-
     const { username, password, email } = JSON.parse(event.body || "{}");
-
-    console.log("getting user", username, password, email);
 
     // Input validation
     if (!username || !password || !email) {
@@ -81,14 +75,7 @@ export const handler = async (
       profilePictureUrl: "",
     };
 
-    console.log("newUSer", newUser);
-
-    await dynamo.send(
-      new PutCommand({
-        TableName: userTable,
-        Item: newUser,
-      })
-    );
+    await createUser(newUser, userTable);
 
     return {
       statusCode: 200,

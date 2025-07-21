@@ -4,4 +4,5 @@ export interface User {
   profilePictureUrl?: string;
   createdAt: string;
   updatedAt?: string;
+  lastLoginAt?: string;
 }

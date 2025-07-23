@@ -38,15 +38,15 @@ export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
-    const { username, password, email } = JSON.parse(event.body || "{}");
+    const { password, email } = JSON.parse(event.body || "{}");
 
     // Input validation
-    if (!username || !password || !email) {
+    if (!password || !email) {
       return {
         statusCode: 400,
         headers: JSON_HEADERS,
         body: JSON.stringify({
-          message: "Missing username, password, or email",
+          message: "Missing password or email",
         }),
       };
     }
@@ -65,11 +65,10 @@ export const handler = async (
       };
     }
 
-    await registerUser({ username, password, email, clientId });
+    await registerUser({ email, password, clientId });
 
     const newUser: User = {
       email,
-      username,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       profilePictureUrl: "",

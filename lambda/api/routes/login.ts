@@ -38,14 +38,14 @@ export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
-    const { username, password } = JSON.parse(event.body || "{}");
+    const { password, email } = JSON.parse(event.body || "{}");
 
     // Input validation
-    if (!username || !password) {
+    if (!password || !email) {
       return {
         statusCode: 400,
         headers: JSON_HEADERS,
-        body: JSON.stringify({ message: "Missing username or password" }),
+        body: JSON.stringify({ message: "Missing password or email" }),
       };
     }
 
@@ -65,17 +65,17 @@ export const handler = async (
     }
 
     // Attempt to log in the user
-    const authResult = await loginUser({ username, password, clientId });
+    const authResult = await loginUser({ email, password, clientId });
     if (!authResult) {
       return {
         statusCode: 401,
         headers: JSON_HEADERS,
-        body: JSON.stringify({ message: "Invalid username or password" }),
+        body: JSON.stringify({ message: "Invalid email or password" }),
       };
     }
 
     // Update user's last login time in DynamoDB
-    await updateUser(username, userTable);
+    await updateUser(email, userTable);
 
     // Successful login
     return {

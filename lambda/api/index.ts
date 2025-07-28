@@ -3,6 +3,11 @@ import { handler as login } from "./routes/login";
 import { handler as register } from "./routes/register";
 import { handler as addOption } from "./routes/addOption"; // Uncomment if you have this route
 
+import { handler as getAllOptions } from "./routes/getAllOptions";
+// import { handler as getOptionById } from "./routes/getOptionById";
+// import { handler as updateOption } from "./routes/updateOption";
+// import { handler as deleteOption } from "./routes/deleteOption";
+
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
@@ -13,18 +18,35 @@ export const handler = async (
     console.log("Received request:", { path, method, body: event.body });
 
     // Public Auth Endpoints
-
+    // ── Auth ─────────────────────────────────────────────────────
     if (path === "/api/auth/register" && method === "POST")
       return await register(event);
     if (path === "/api/auth/login" && method === "POST")
       return await login(event);
+
+    // ── CREATE ───────────────────────────────────────────────────
     if (path === "/api/options" && method === "POST")
       return await addOption(event);
+
+    // ── READ ─────────────────────────────────────────────────────
+    if (path === "/api/options" && method === "GET")
+      return await getAllOptions(event);
+    // if (/^\/api\/options\/[^\/]+$/.test(path) && method === "GET")
+    //   return await getOptionById(event);
+
+
+    // // ── UPDATE ───────────────────────────────────────────────────
+    // if (/^\/api\/options\/[^\/]+$/.test(path) && method === "PUT")
+    //   return await updateOption(event);
+
+    // // ── DELETE ───────────────────────────────────────────────────
+    // if (/^\/api\/options\/[^\/]+$/.test(path) && method === "DELETE")
+    //   return await deleteOption(event);
 
     return {
       statusCode: 404,
       body: JSON.stringify({
-        message: "Not Found",
+        message: "Path is Not Found",
       }),
     };
   } catch (error: any) {

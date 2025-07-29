@@ -91,16 +91,11 @@ export class ApiStack extends Stack {
         // })
 
         optionsResource.addMethod("POST", props.lambdaIntegration, optionsWithAuth); // POST /api/options
-
-
-        // const root = api.root.addResource(props.scopeResourceName, optionsWithCors); 
-
-        // root.addMethod("GET", props.lambdaIntegration, optionsWithAuth); // GET
-        // // Add OPTIONS method for CORS preflight
-        // root.addMethod("OPTIONS", props.lambdaIntegration, {
-        //     authorizationType: AuthorizationType.NONE, // OPTIONS should not require auth
-        // });
-
+        optionsResource.addMethod("GET", props.lambdaIntegration, optionsWithAuth); // GET /api/options
+        // GET /api/options/{id} 
+        const single = optionsResource.addResource("{id}", optionsWithCors);
+        single.addMethod("GET", props.lambdaIntegration, optionsWithAuth);
+        single.addMethod("DELETE", props.lambdaIntegration, optionsWithAuth); // DELETE /api/options/{id}
 
         // Outputs --------------------------------
         new CfnOutput(this, "ApiEndpoint", {

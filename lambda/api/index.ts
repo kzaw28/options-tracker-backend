@@ -4,9 +4,9 @@ import { handler as register } from "./routes/register";
 import { handler as addOption } from "./routes/addOption"; // Uncomment if you have this route
 
 import { handler as getAllOptions } from "./routes/getAllOptions";
-// import { handler as getOptionById } from "./routes/getOptionById";
+import { handler as getOptionById } from "./routes/getOptionById";
 // import { handler as updateOption } from "./routes/updateOption";
-// import { handler as deleteOption } from "./routes/deleteOption";
+import { handler as deleteOption } from "./routes/deleteOption";
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -28,20 +28,31 @@ export const handler = async (
     if (path === "/api/options" && method === "POST")
       return await addOption(event);
 
-    // ── READ ─────────────────────────────────────────────────────
+    // ── READ SINGLE ───────────────────────────────────────────────
+    const idMatch = path.match(/^\/api\/options\/([^\/]+)$/);
+    if (idMatch && method === "GET") {
+      const rawId = idMatch[1];                         
+      const id = decodeURIComponent(rawId);          
+      event.pathParameters = { id };                    
+      return await getOptionById(event);
+    }
+
+    // ── DELETE ───────────────────────────────────────────────────
+    if (idMatch && method === "DELETE") {
+      const id = decodeURIComponent(idMatch[1]);
+      event.pathParameters = { id };
+      return await deleteOption(event);
+    }
+
+    // ── READ ALL ─────────────────────────────────────────────────
     if (path === "/api/options" && method === "GET")
       return await getAllOptions(event);
-    // if (/^\/api\/options\/[^\/]+$/.test(path) && method === "GET")
-    //   return await getOptionById(event);
 
 
     // // ── UPDATE ───────────────────────────────────────────────────
     // if (/^\/api\/options\/[^\/]+$/.test(path) && method === "PUT")
     //   return await updateOption(event);
 
-    // // ── DELETE ───────────────────────────────────────────────────
-    // if (/^\/api\/options\/[^\/]+$/.test(path) && method === "DELETE")
-    //   return await deleteOption(event);
 
     return {
       statusCode: 404,

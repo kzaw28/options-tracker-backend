@@ -23,5 +23,13 @@ export class DynamoDBStack extends cdk.Stack {
       tableName: "Option",
       removalPolicy: cdk.RemovalPolicy.DESTROY, //TODO: Discuss for production
     });
+
+    // ADD THIS GSI ──────────────────────────────────
+    this.option.addGlobalSecondaryIndex({
+      indexName:      "ByEmail",
+      partitionKey:   { name: "email",      type: dynamodb.AttributeType.STRING },
+      sortKey:        { name: "optionName", type: dynamodb.AttributeType.STRING },
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
   }
 }

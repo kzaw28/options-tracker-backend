@@ -47,6 +47,18 @@ export class LambdaStack extends cdk.Stack {
     props.userTable.grantReadWriteData(ApiLambda);
     props.optionTable.grantReadWriteData(ApiLambda);
 
+    // 3) Explicitly allow Query on your GSI (ByEmail)
+    ApiLambda.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ["dynamodb:Query"],
+      resources: [
+        // the table itself (Query can also run against the table if you ever need it)
+        props.optionTable.tableArn,
+        // **and** the GSI index ARN
+        `${props.optionTable.tableArn}/index/ByEmail`
+      ],
+    }));
+
     // Lambda integration for API Gateway
     this.lambdaIntegration = new LambdaIntegration(ApiLambda);
   }

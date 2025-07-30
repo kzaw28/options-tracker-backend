@@ -94,6 +94,7 @@ export class ApiStack extends Stack {
         optionsResource.addMethod("GET", props.lambdaIntegration, optionsWithAuth); // GET /api/options
         // GET /api/options/{id} 
         const single = optionsResource.addResource("{id}", optionsWithCors);
+        single.addMethod("PUT",    props.lambdaIntegration, optionsWithAuth);
         single.addMethod("GET", props.lambdaIntegration, optionsWithAuth);
         single.addMethod("DELETE", props.lambdaIntegration, optionsWithAuth); // DELETE /api/options/{id}
 

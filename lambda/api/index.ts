@@ -5,7 +5,7 @@ import { handler as addOption } from "./routes/addOption"; // Uncomment if you h
 
 import { handler as getAllOptions } from "./routes/getAllOptions";
 import { handler as getOptionById } from "./routes/getOptionById";
-// import { handler as updateOption } from "./routes/updateOption";
+import { handler as updateOption } from "./routes/updateOption";
 import { handler as deleteOption } from "./routes/deleteOption";
 
 export const handler = async (
@@ -37,6 +37,13 @@ export const handler = async (
       return await getOptionById(event);
     }
 
+    // ── UPDATE ───────────────────────────────────────────────────
+    if (idMatch && method === "PUT") {
+      const id = decodeURIComponent(idMatch[1]);
+      event.pathParameters = { id };
+      return await updateOption(event);
+    }
+
     // ── DELETE ───────────────────────────────────────────────────
     if (idMatch && method === "DELETE") {
       const id = decodeURIComponent(idMatch[1]);
@@ -47,12 +54,6 @@ export const handler = async (
     // ── READ ALL ─────────────────────────────────────────────────
     if (path === "/api/options" && method === "GET")
       return await getAllOptions(event);
-
-
-    // // ── UPDATE ───────────────────────────────────────────────────
-    // if (/^\/api\/options\/[^\/]+$/.test(path) && method === "PUT")
-    //   return await updateOption(event);
-
 
     return {
       statusCode: 404,

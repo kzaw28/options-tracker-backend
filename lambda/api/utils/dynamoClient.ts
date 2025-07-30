@@ -4,7 +4,8 @@ import {
     PutCommand,
     GetCommand,
     QueryCommand,
-    DeleteCommand
+    DeleteCommand,
+    UpdateCommand
 } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({});
@@ -89,4 +90,47 @@ export const deleteOption = async (
     })
   );
   return result.Attributes;  // the deleted item, or undefined
+};
+
+/**
+ * Update one option’s attributes (except PK/SK) and bump updatedAt.
+ */
+export const updateOption = async (
+  tableName: string,
+  id: string,
+  email: string,
+  updates: Record<string, any>
+) => {
+  // Build a SET expression & attr maps
+  const exprNames: Record<string,string> = {};
+  const exprValues: Record<string, any> = {};
+  const setParts: string[] = [];
+
+  //  For each field to update, add:
+  //    #fieldName = :fieldName
+  //    with mappings in exprNames & exprValues
+  Object.entries(updates).forEach(([k, v]) => {
+    exprNames[`#${k}`]   = k;
+    exprValues[`:${k}`]  = v;
+    setParts.push(`#${k} = :${k}`);
+  });
+
+  // Always update the timestamp
+  exprNames["#updatedAt"]  = "updatedAt";
+  exprValues[":updatedAt"] = new Date().toISOString();
+  setParts.push("#updatedAt = :updatedAt");
+
+  const result = await docClient.send(
+    new UpdateCommand({
+      TableName: tableName,
+      Key: { optionName: id, email },
+      UpdateExpression: "SET " + setParts.join(", "),
+      ExpressionAttributeNames:  exprNames,
+      ExpressionAttributeValues: exprValues,
+      ConditionExpression: "attribute_exists(optionName) AND attribute_exists(email)",
+      ReturnValues: "ALL_NEW",
+    })
+  );
+
+  return result.Attributes;  // the updated item
 };

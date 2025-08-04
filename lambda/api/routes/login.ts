@@ -32,6 +32,9 @@ import { updateUser } from "../utils/userDbClient";
 
 const JSON_HEADERS = {
   "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",               // or your exact front-end URL
+  "Access-Control-Allow-Credentials": "true",
+  "Access-Control-Allow-Headers": "Content-Type,Authorization"
 };
 
 export const handler = async (

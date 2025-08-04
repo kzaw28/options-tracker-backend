@@ -3,7 +3,12 @@ import { getOptionById } from "../utils/dynamoClient";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 import { CognitoIdTokenPayload } from "aws-jwt-verify/jwt-model";
 
-const JSON_HEADERS = { "Content-Type": "application/json" };
+const JSON_HEADERS = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Credentials": "true",
+  "Access-Control-Allow-Headers": "Content-Type,Authorization"
+};
 const TABLE_NAME   = "Option";
 // const TABLE_NAME = process.env.OPTIONS_TABLE_NAME!;
 const USER_POOL_ID = process.env.USER_POOL_ID!;

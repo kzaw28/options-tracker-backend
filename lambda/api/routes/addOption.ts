@@ -4,7 +4,10 @@ import { CognitoJwtVerifier } from "aws-jwt-verify";
 import { CognitoIdTokenPayload } from "aws-jwt-verify/jwt-model";
 
 const JSON_HEADERS = {
-  'Content-Type': 'application/json',
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Credentials": "true",
+  "Access-Control-Allow-Headers": "Content-Type,Authorization"
 };
 
 const TABLE_NAME = "Option"; 

@@ -7,7 +7,7 @@ import {
   UserPool,
   UserPoolResourceServer,
   CfnUserPoolGroup,
-  OAuthScope,
+  VerificationEmailStyle,
   UserPoolClient,
 } from "aws-cdk-lib/aws-cognito";
 import { Construct } from "constructs";
@@ -30,6 +30,12 @@ export class AuthStack extends Stack {
         email: true, // Allow users to sign in with their email
         phone: false,
         username: false, // Disable username sign-in
+      },
+      autoVerify: { email: true }, // Auto-verify email addresses
+      userVerification: {
+        emailSubject: "Verify your email for Options Tracker!",
+        emailBody: "Hello {username},\n\nPlease verify your email by clicking the link below:\n{##Verify Email##}",
+        emailStyle: VerificationEmailStyle.LINK, // Use a verification link
       },
       passwordPolicy: {
         minLength: 8,

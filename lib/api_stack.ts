@@ -77,14 +77,14 @@ export class ApiStack extends Stack {
         // Public Endpoints --------------------------------
         const authResource = apiResource.addResource("auth")
 
-        const registerResource = authResource.addResource("register")
+        const registerResource = authResource.addResource("register", optionsWithCors)
         registerResource.addMethod("POST", props.lambdaIntegration, optionsWithNoAuth); // POST /api/auth/register
 
-        const loginResource = authResource.addResource("login");
+        const loginResource = authResource.addResource("login", optionsWithCors);
         loginResource.addMethod("POST", props.lambdaIntegration, optionsWithNoAuth); // POST /api/auth/login
 
         // Protected Endpoints --------------------------------
-        const optionsResource = apiResource.addResource("options");
+        const optionsResource = apiResource.addResource("options", optionsWithCors);
         // optionsResource.addProxy({
         //     defaultIntegration: props.lambdaIntegration,
         //     defaultMethodOptions: optionsWithAuth, // Use the authorizer for all methods
